@@ -1,4 +1,4 @@
-
+import ListEmployee from './components/ListEmployee'
 import './App.css'
 
 function App() {
@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      
+      <ListEmployee />
     </>
   )
 }
