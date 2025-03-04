@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { createEmployee } from "../services/EmployeeService";
+import React, { useEffect, useState } from "react";
+import { createEmployee, getEmployee, updateEmployee } from "../services/EmployeeService";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Employee = () => {
@@ -18,7 +18,21 @@ const Employee = () => {
 
   const navigator = useNavigate();
 
-  function saveEmployee(e) {
+  useEffect(() => {
+    if (id) {
+      getEmployee(id)
+        .then((response) => {
+          setFirstName(response.data.firstName);
+          setLastName(response.data.lastName);
+          setEmail(response.data.email);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [id]);
+
+  function saveOrUpdateEmployee(e) {
     // prevent the default behavior of the form
     e.preventDefault();
 
@@ -27,13 +41,30 @@ const Employee = () => {
       // create an employee object
       const employee = { firstName, lastName, email };
       console.log(employee);
-      // call the createEmployee function from the EmployeeService and pass the employee object
-      createEmployee(employee).then((reponse) => {
-        console.log(reponse.data);
-        // navigate to the employees page after the employee is created
-        navigator("/employees");
-      });
-    } 
+      // check if the employee is being updated or created
+
+      if (id) {
+        updateEmployee(id, employee)
+          .then((response) => {
+            console.log(response.data);
+            navigator("/employees");
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else {
+        // call the createEmployee function from the EmployeeService and pass the employee object
+        createEmployee(employee)
+          .then((reponse) => {
+            console.log(reponse.data);
+            // navigate to the employees page after the employee is created
+            navigator("/employees");
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+    }
   }
 
   function validateForm() {
@@ -70,9 +101,9 @@ const Employee = () => {
 
   function pageTitle() {
     if (id) {
-      return <h2 className="text-center">Update Employee</h2>
+      return <h2 className="text-center">Update Employee</h2>;
     } else {
-      return <h2 className="text-center">Add Employee</h2>
+      return <h2 className="text-center">Add Employee</h2>;
     }
   }
 
@@ -82,9 +113,7 @@ const Employee = () => {
       <div className="row">
         <div className="card col-md-6 offset-md-3 offset-md-3">
           <br />
-         {
-            pageTitle()
-         }
+          {pageTitle()}
           <div className="card-body">
             <form>
               <div className="form-group mb-3">
@@ -94,10 +123,14 @@ const Employee = () => {
                   placeholder="Enter Employee First Name"
                   name="firstName"
                   value={firstName}
-                  className={`form-control ${errors.firstName ? 'is-invalid' : ''}`}
+                  className={`form-control ${
+                    errors.firstName ? "is-invalid" : ""
+                  }`}
                   onChange={(e) => setFirstName(e.target.value)}
                 />
-                {errors.firstName && <div className="invalid-feedback">{errors.firstName}</div>}
+                {errors.firstName && (
+                  <div className="invalid-feedback">{errors.firstName}</div>
+                )}
               </div>
               <div className="form-group mb-3">
                 <label className="form-label">Last Name</label>
@@ -106,10 +139,14 @@ const Employee = () => {
                   placeholder="Enter Employee Last Name"
                   name="lastName"
                   value={lastName}
-                  className={`form-control ${errors.lastName ? 'is-invalid' : ''}`}
+                  className={`form-control ${
+                    errors.lastName ? "is-invalid" : ""
+                  }`}
                   onChange={(e) => setLastName(e.target.value)}
                 />
-                {errors.lastName && <div className="invalid-feedback">{errors.lastName}</div>}
+                {errors.lastName && (
+                  <div className="invalid-feedback">{errors.lastName}</div>
+                )}
               </div>
               <div className="form-group mb-3">
                 <label className="form-label">Email</label>
@@ -118,15 +155,17 @@ const Employee = () => {
                   placeholder="Enter Employee Email"
                   name="email"
                   value={email}
-                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                {errors.email && (
+                  <div className="invalid-feedback">{errors.email}</div>
+                )}
               </div>
               <button
                 type="submit"
                 className="btn btn-success"
-                onClick={saveEmployee}
+                onClick={saveOrUpdateEmployee}
               >
                 Submit
               </button>
