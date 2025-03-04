@@ -1,5 +1,6 @@
 import React , {useEffect, useState}from 'react'
 import { listEmployees } from '../services/EmployeeService'
+import { useNavigate } from 'react-router-dom'
 
 const ListEmployee = () => {
 
@@ -28,6 +29,8 @@ const ListEmployee = () => {
     // step 2: create a state to store the data
     const [employees, setEmployees]= useState([])
 
+    const navigator = useNavigate()
+
     // step 3: create a function to fetch the data from the API
     useEffect(() => {
         listEmployees().then((response) => {
@@ -37,10 +40,15 @@ const ListEmployee = () => {
         })
     }, [])
 
+    // step 4: create a function to navigate to the add employee page
+    function addNewEmployee() {
+        navigator('/add-employee')
+    }
 
   return (
     <div className='container'>
       <h2 className='text-center my-5'>Employee List</h2>
+      <button className='btn btn-primary mb-2' onClick={(addNewEmployee)}>Add Employee</button>
       <table className='table table-bordered table-striped'>
         <thead className='table-dark'>
             <tr>
