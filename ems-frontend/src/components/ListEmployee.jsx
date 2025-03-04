@@ -1,5 +1,5 @@
 import React , {useEffect, useState}from 'react'
-import { listEmployees } from '../services/EmployeeService'
+import { listEmployees, deleteEmployee } from '../services/EmployeeService'
 import { useNavigate } from 'react-router-dom'
 
 const ListEmployee = () => {
@@ -33,12 +33,16 @@ const ListEmployee = () => {
 
     // step 3: create a function to fetch the data from the API
     useEffect(() => {
+        getAllEmployees();
+    }, [])
+
+    function getAllEmployees() {
         listEmployees().then((response) => {
             setEmployees(response.data);
         }).catch(error => {
                 console.log(error);
         })
-    }, [])
+    }
 
     // step 4: create a function to navigate to the add employee page
     function addNewEmployee() {
@@ -47,6 +51,16 @@ const ListEmployee = () => {
 
     function updateEmployee(id) {
         navigator(`/update-employee/${id}`)
+    }
+
+    function removeEmployee(id) {
+        console.log(id);
+
+        deleteEmployee(id).then((response) => {
+            getAllEmployees();
+        }).catch(error => {
+            console.error(error);
+        })
     }
 
   return (
@@ -72,6 +86,7 @@ const ListEmployee = () => {
                     <td>{employee.email}</td>
                     <td>
                         <button className='btn btn-info' onClick={() => updateEmployee(employee.id)}>Update</button>
+                        <button className='btn btn-danger' onClick={() => removeEmployee(employee.id)} style={{marginLeft: '10px'}}>Delete</button>
                     </td>
                 </tr>
             )}
