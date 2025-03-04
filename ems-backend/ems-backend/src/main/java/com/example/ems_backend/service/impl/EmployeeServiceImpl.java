@@ -1,5 +1,8 @@
 package com.example.ems_backend.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,4 +45,12 @@ public class EmployeeServiceImpl implements EmployeeService{
         return employeeDto;
     }
 
+    @Override
+    public List<EmployeeDto> getAllEmployees() {
+        List<Employee> employees = employeeRepository.findAll();
+
+       // Convert Employee entity to EmployeeDto
+       // Use map() to convert each Employee entity to EmployeeDto
+       return employees.stream().map((employee) -> EmployeeMapper.mapToEmployeeDto(employee)).collect(Collectors.toList());
+    }
 }
